@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import connectDB from './config.js';
-import User from '../backend/models/UserModels.js'
+import User from './models/UserModels.js';
 import Book from '../backend/models/bookModels.js'
 // Load environment variables
 dotenv.config();
