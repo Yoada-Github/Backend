@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import connectDB from './config.js';
 import User from './models/UserModels.js';
-import Book from '../backend/models/bookModels.js'
+import Book from './models/bookModels.js'
 // Load environment variables
 dotenv.config();
 
