@@ -1,5 +1,6 @@
 import express from 'express';
-import { Book } from '../models/bookModel.js';
+import bookModel from "../models/bookModels.js";
+
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.post('/', async (request, response) => {
       publishYear: request.body.publishYear,
     };
 
-    const book = await Book.create(newBook);
+    const book = await bookModel.create(newBook);
 
     return response.status(201).send(book);
   } catch (error) {
@@ -30,60 +31,86 @@ router.post('/', async (request, response) => {
   }
 });
 
-// Route for Get All Books from database
-router.get('/', async (request, response) => {
-  try {
-    const books = await Book.find({});
 
-    return response.status(200).json({
-      count: books.length,
-      data: books,
-    });
+// Fetch all books
+router.get('/books/:userId', async (req, res) => {
+
+const {userId} = req.params
+  
+  try {
+    const books = await bookModel.find({user: userId});
+
+     console.log(books)
+    return res.status(200).json(books);
   } catch (error) {
-    console.log(error.message);
-    response.status(500).send({ message: error.message });
+    console.error('Error fetching books:', error.message);
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
+router.get('/books/edit/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {userId} = req.query
+    const book = await bookModel.findById(id);
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    if(book.user.toString() != userId  ){
+      return res.status(404).json({ message: 'Invalid user id' });
+    }
+
+    return res.status(200).json(book);
+  } catch (error) {
+    console.error('Error fetching the book:', error.message);
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
 
 // Route for Get One Book from database by id
-router.get('/books/:id', async (request, response) => {
+router.get('/books/details/:id', async (req, res) => {
   try {
-    const { id } = request.params;
+    const { id } = req.params;
+    // const {userId} = req.query;
+    const book = await bookModel.findById(id);
 
-    const book = await Book.findById(id);
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
 
-    return response.status(200).json(book);
+    return res.status(200).json(book);
   } catch (error) {
-    console.log(error.message);
-    response.status(500).send({ message: error.message });
+    console.error('Error fetching the book:', error.message);
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
 
-// Route for Update a Book
-router.put('/:id', async (request, response) => {
+// Update a book by ID
+router.put('/books/:id', async (req, res) => {
   try {
-    if (
-      !request.body.title ||
-      !request.body.author ||
-      !request.body.publishYear
-    ) {
-      return response.status(400).send({
-        message: 'Send all required fields: title, author, publishYear',
+    const { id } = req.params;
+    
+    const { title, author, publishYear } = req.body;
+    console.log(req)
+
+    const book = await bookModel.findByIdAndUpdate (
+      id, {
+        title: title,
+        author: author,
+        publishYear: publishYear
       });
+
+    // console.log(book)
+
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
     }
 
-    const { id } = request.params;
-
-    const result = await Book.findByIdAndUpdate(id, request.body);
-
-    if (!result) {
-      return response.status(404).json({ message: 'Book not found' });
-    }
-
-    return response.status(200).send({ message: 'Book updated successfully' });
+    return res.status(200).json(book);
   } catch (error) {
-    console.log(error.message);
-    response.status(500).send({ message: error.message });
+    console.error('Error updating the book:', error.message);
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
 
@@ -92,7 +119,7 @@ router.delete('/books/:id', async (request, response) => {
   try {
     const { id } = request.params;
 
-    const result = await Book.findByIdAndDelete(id);
+    const result = await bookModel.findByIdAndDelete(id);
 
     if (!result) {
       return response.status(404).json({ message: 'Book not found' });
