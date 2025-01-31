@@ -12,7 +12,10 @@ dotenv.config();
 const app = express();
 
 // Use CORS middleware (allow all origins for now, but restrict it in production)
-app.use(cors());
+app.use(cors({
+  origin: "https://book-store-theta-six.vercel.app",  // Allow your frontend
+  credentials: true  // Allow cookies/auth headers
+}));
 app.use(express.json());
 
 app.get('/', (req, res) => {

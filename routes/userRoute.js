@@ -37,6 +37,9 @@ const sendVerificationEmail = async (email, token) => {
 
 // Login Endpoint
 router.post('/login', async (req, res) => {
+  console.log('Login request received:', req.body); // Debugging
+  console.log('Login request received:', req.body); // Debugging
+
   const { username, email, password } = req.body;
 
   console.log(await User.find())
