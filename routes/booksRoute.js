@@ -7,19 +7,22 @@ const router = express.Router();
 // Route for Save a new Book
 router.post('/', async (request, response) => {
   try {
+    const data = request.body
+    // console.log(request.body)
     if (
-      !request.body.title ||
-      !request.body.author ||
-      !request.body.publishYear
+      !data.title ||
+      !data.author ||
+      !data.publishYear
     ) {
       return response.status(400).send({
         message: 'Send all required fields: title, author, publishYear',
       });
     }
     const newBook = {
-      title: request.body.title,
-      author: request.body.author,
-      publishYear: request.body.publishYear,
+      title: data.title,
+      author: data.author,
+      publishYear: data.publishYear,
+      user: data.userId,
     };
 
     const book = await bookModel.create(newBook);
@@ -36,7 +39,7 @@ router.post('/', async (request, response) => {
 router.get('/books/:userId', async (req, res) => {
 
 const {userId} = req.params
-  
+  // console.log(userId)
   try {
     const books = await bookModel.find({user: userId});
 
