@@ -23,6 +23,7 @@ const sendVerificationEmail = async (email, token) => {
           pass: process.env.EMAIL_PASSWORD, // Add this to your .env
       },
   });
+
   
 
   const mailOptions = {
@@ -34,6 +35,7 @@ const sendVerificationEmail = async (email, token) => {
 
   const info = await transporter.sendMail(mailOptions);
   // console.log("Email sent successfully:", info.response);};
+}
 
 router.get("/", async (req, res)=>{
   const users = await User.find()
@@ -169,6 +171,6 @@ router.get('/verify', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-}
 
-export default router
+
+export default router;

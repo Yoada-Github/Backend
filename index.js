@@ -25,8 +25,8 @@ app.get('/', (req, res) => {
 });
 
 
- app.use("/user",userRoute)
- app.use("/book",bookRoute)
+ app.use("/user", userRoute)
+ app.use("/book", bookRoute)
 
 
 // Connect to the database and start the server
