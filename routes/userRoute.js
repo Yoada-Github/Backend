@@ -132,6 +132,7 @@ router.post('/signup', async (req, res) => {
 
 router.get('/verify', async (req, res) => {
   try {
+    console.log(req.query)
     const { token } = req.query;
 
     if (!token) {
@@ -139,15 +140,18 @@ router.get('/verify', async (req, res) => {
     }
 
     // Find user by verification token
-    const user = await User.findOne({ verificationToken: token });
+    const user = await User.findOneAndUpdate({ verificationToken: token });
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
-
-    // Mark the user as verified
-    user.isEmailVerified = true;
-    user.verificationToken = null; // Remove token after verification
+    user.set(
+      {
+        isEmailVerified: true,
+        verificationToken: "none"
+      }
+    )
+    console.log(user)
     await user.save();
 
     res.status(200).json({ message: 'Email successfully verified!' });
