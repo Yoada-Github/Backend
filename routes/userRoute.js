@@ -33,16 +33,22 @@ const sendVerificationEmail = async (email, token) => {
   };
 
   const info = await transporter.sendMail(mailOptions);
-  console.log("Email sent successfully:", info.response);};
+  // console.log("Email sent successfully:", info.response);};
+
+router.get("/", async (req, res)=>{
+  const users = await User.find()
+  res.status(200).send(users)
+
+})
 
 // Login Endpoint
 router.post('/login', async (req, res) => {
-  console.log('Login request received:', req.body); // Debugging
+  // console.log('Login request received:', req.body); // Debugging
 
   const { username, email, password } = req.body;
 
-  console.log(await User.find())
-  console.log(username, email, password)
+  // console.log(await User.find())
+  // console.log(username, email, password)
   if ((!username && !email) || !password) {
     return res.status(400).json({ message: "Username/email and password are required" });
   }
@@ -53,7 +59,7 @@ router.post('/login', async (req, res) => {
      username: username
     });
 
-    console.log(user)
+    // console.log(user)
 
     if (!user) {
       return res.status(400).json({ message: "Invalid username/email or password" });
@@ -115,10 +121,10 @@ router.post('/signup', async (req, res) => {
       verificationToken:token,
       isEmailVerified: false,
     })
-    console.log(newUser)
+    // console.log(newUser)
     await newUser.save()
 
-    console.log("Sending verification email to:", email, "with token:", token);
+    // console.log("Sending verification email to:", email, "with token:", token);
     await sendVerificationEmail(email,token);
 
     res.status(201).json({ message: 'User created successfully', token });
@@ -132,15 +138,15 @@ router.post('/signup', async (req, res) => {
 
 router.get('/verify', async (req, res) => {
   try {
-    console.log(req.query)
     const { token } = req.query;
+    // console.log(token)
 
     if (!token) {
       return res.status(400).json({ message: 'Token is required' });
     }
 
     // Find user by verification token
-    const user = await User.findOneAndUpdate({ verificationToken: token });
+    const user = await User.findOne({ verificationToken: token });
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired token' });
@@ -151,7 +157,10 @@ router.get('/verify', async (req, res) => {
         verificationToken: "none"
       }
     )
-    console.log(user)
+    // console.log("----------------------------------------------")
+    // console.log(user)
+    // console.log("----------------------------------------------")
+
     await user.save();
 
     res.status(200).json({ message: 'Email successfully verified!' });
@@ -160,5 +169,6 @@ router.get('/verify', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+}
 
-export default router;
+export default router
