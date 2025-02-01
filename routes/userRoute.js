@@ -29,7 +29,7 @@ const sendVerificationEmail = async (email, token) => {
       from: process.env.EMAIL,
       to: email,
       subject: 'Verify your email',
-      html: `<p>Click <a href="http://localhost:${process.env.PORT}/api/verify?token=${token}">here</a> to verify your email.</p>`,
+      html: `<p>Click <a href="https://backend-vo93.onrender.com/user/verify?token=${token}">here</a> to verify your email.</p>`,
   };
 
   const info = await transporter.sendMail(mailOptions);
@@ -105,8 +105,6 @@ router.post('/signup', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
-
 
     const  token = jwt.sign({ username, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
